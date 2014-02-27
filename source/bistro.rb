@@ -1,7 +1,9 @@
 require 'csv'
 
 class Recipe
+
   attr_reader :id, :name, :description, :ingredients, :directions
+
   def initialize(id, name, description, ingredients, directions)
     @id = id
     @name = name
@@ -9,16 +11,19 @@ class Recipe
     @ingredients = ingredients
     @directions = directions
   end
+
+  def display
+    "#{@id} - #{@name}\n#{@description}\n\nIngredients:\n#{@ingredients}\n\nPreparation Instructions:\n#{@directions}"
+  end
 end
 
 class Bistro
+
   attr_reader :filename, :recipes
-  attr_accessor :found_recipes
 
   def initialize
     @filename = filename
     @recipes = []
-    @found_recipes = []
   end
 
   def load_recipes(filename)
@@ -29,37 +34,16 @@ class Bistro
   end
 
   def find_recipe_by_id(recipe_id)
-    @recipes.each do |recipe|
-      found_recipes << recipe if recipe.id == recipe_id
-    end
-    if found_recipes == []
-      raise "Can't find a recipe with an id of #{recipe_id.inspect}"
-    else
-      display(found_recipes)
-    end
-  end
-
-  def display(found_recipes)
-    found_recipes.each do |recipe|
-      puts "#{recipe.id} - #{recipe.name}"
-      puts  "#{recipe.description}"
-      puts
-      puts "Ingredients:"
-      puts "#{recipe.ingredients}"
-      puts
-      puts "Preparation Instructions:"
-      puts "#{recipe.directions}"
-    end
+    @recipes.find { |recipe| recipe.id == recipe_id }
+    # if @recipes.empty?
+    #   raise "Can't find a recipe with an id of #{recipe_id.inspect}"
+    # end
   end
 
   def list
-    name_array = @recipes.map(&:name)
-    alphabetized = name_array.sort
-    counter = 1
-    alphabetized.each do |name|
-      puts "#{counter}. #{name}"
-      counter += 1
-    end
+    recipe_names = @recipes.map(&:name)
+    recipe_names_sorted = recipe_names.sort
+    recipe_names_sorted.each_with_index {|name, index| puts "#{(index+1)}. #{name}"}
   end
 end
 
@@ -72,9 +56,11 @@ if ARGV.any?
   bistro.load_recipes("recipes.csv")
 
   if ARGV[0] == "list"
-    bistro.list
+    all_recipes = bistro.list
+
   elsif ARGV[0] == "display"
-    bistro.find_recipe_by_id(ARGV[1])
+    recipe = bistro.find_recipe_by_id(ARGV[1])
+    puts recipe.display
   end
 end
 
