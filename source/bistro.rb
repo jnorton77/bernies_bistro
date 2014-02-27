@@ -35,11 +35,24 @@ class Bistro
     end
 
     raise "Can't find a recipe with an id of #{recipe_id.inspect}" unless found_recipes
-    found_recipes.map(&:name)
+    display(found_recipes)
+  end
+
+  def display(found_recipes)
+    found_recipes.each do |recipe|
+      puts "#{recipe.id} - #{recipe.name}"
+      puts  "#{recipe.description}"
+      puts
+      puts "Ingredients:"
+      puts "#{recipe.ingredients}"
+      puts
+      puts "Preparation Instructions:"
+      puts "#{recipe.directions}"
+    end
   end
 
   def list
-    @recipes.map(&:name)
+    puts @recipes.map(&:name)
   end
 
 end
@@ -54,7 +67,7 @@ if ARGV.any?
   bistro.load_recipes("recipes.csv")
 
   if ARGV[0] == "list"
-    puts bistro.list
+    bistro.list
   elsif ARGV[0] == "display"
     puts bistro.find_recipe_by_id(ARGV[1])
   end
