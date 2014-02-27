@@ -1,3 +1,6 @@
-require_relative('bistro')
+require_relative('bistro.rb')
 
-# Your test code here
+bistro = Bistro.new
+p bistro.find_recipe_by_id(2) == "Poodle Cake (For your puppy!)"
+
+
