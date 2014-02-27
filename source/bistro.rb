@@ -52,9 +52,14 @@ class Bistro
   end
 
   def list
-    puts @recipes.map(&:name)
+    name_array = @recipes.map(&:name)
+    alphabetized = name_array.sort
+    counter = 1
+    alphabetized.each do |name|
+      puts "#{counter}. #{name}"
+      counter += 1
+    end
   end
-
 end
 
 
