@@ -29,13 +29,14 @@ class Bistro
   end
 
   def find_recipe_by_id(recipe_id)
-    found_recipes = []
     @recipes.each do |recipe|
       found_recipes << recipe if recipe.id == recipe_id
     end
-
-    raise "Can't find a recipe with an id of #{recipe_id.inspect}" unless found_recipes
-    display(found_recipes)
+    if found_recipes == []
+      raise "Can't find a recipe with an id of #{recipe_id.inspect}"
+    else
+      display(found_recipes)
+    end
   end
 
   def display(found_recipes)
