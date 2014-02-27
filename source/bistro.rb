@@ -4,46 +4,49 @@ class Recipe
 
   attr_reader :id, :name, :description, :ingredients, :directions
 
-  def initialize(id, name, description, ingredients, directions)
-    @id = id
-    @name = name
-    @description = description
-    @ingredients = ingredients
-    @directions = directions
+  def initialize(attributes)
+    @id = attributes['id']
+    @name = attributes['name']
+    @description = attributes['description']
+    @ingredients = attributes['ingredients']
+    @directions = attributes['directions']
   end
 
   def display
-    "#{@id} - #{@name}\n#{@description}\n\nIngredients:\n#{@ingredients}\n\nPreparation Instructions:\n#{@directions}"
+    "#{id} - #{name}\n#{description}\n\nIngredients:\n#{ingredients}\n\nPreparation Instructions:\n#{directions}"
   end
 end
 
 class Bistro
 
-  attr_reader :filename, :recipes
+  attr_reader :recipes
 
   def initialize
-    @filename = filename
     @recipes = []
   end
 
   def load_recipes(filename)
     CSV.foreach(filename, headers: true) do |row|
-      @recipes << Recipe.new(row["id"], row["name"], row["description"], row["ingredients"], row["directions"])
+      @recipes << Recipe.new(row)
     end
-    @recipes
   end
 
   def find_recipe_by_id(recipe_id)
-    @recipes.find { |recipe| recipe.id == recipe_id }
-    # if @recipes.empty?
-    #   raise "Can't find a recipe with an id of #{recipe_id.inspect}"
-    # end
+    recipe = @recipes.find { |recipe| recipe.id == recipe_id }
+    recipe_error(recipe_id) unless recipe
+    recipe
+  end
+
+  def recipe_error(recipe_id)
+    raise "Can't find a recipe with an id of #{recipe_id.inspect}"
+  end
+
+  def alphabetize
+    @recipes.sort_by { |recipe| recipe.name }
   end
 
   def list
-    recipe_names = @recipes.map(&:name)
-    recipe_names_sorted = recipe_names.sort
-    recipe_names_sorted.each_with_index {|name, index| puts "#{(index+1)}. #{name}"}
+    alphabetize.map.with_index(1) {|recipe, index| "#{(index)}. #{recipe.name}"}
   end
 end
 
@@ -56,7 +59,7 @@ if ARGV.any?
   bistro.load_recipes("recipes.csv")
 
   if ARGV[0] == "list"
-    all_recipes = bistro.list
+    puts bistro.list
 
   elsif ARGV[0] == "display"
     recipe = bistro.find_recipe_by_id(ARGV[1])
